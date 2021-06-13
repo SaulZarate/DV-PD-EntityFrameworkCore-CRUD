@@ -2,7 +2,7 @@
 
 Proyecto realizado a modo de practica
 
-## Creación del proyecto desde cero
+## CreaciÃ³n del proyecto desde cero
 
 * Installar los siguientes paquetes desde el administrador de paquetes NuGet: 
     * Microsoft.EntityFrameworkCore
@@ -16,7 +16,7 @@ Proyecto realizado a modo de practica
     ```
         using Microsoft.EntityFrameworkCore;
     ```
-    * Crear el constructor (dejarlo vacío)
+    * Crear el constructor (dejarlo vacÃ­o)
 * Crear una clase por Modelo
     * Agregar los atributos necesarios usando properties
     ```
@@ -65,8 +65,8 @@ Proyecto realizado a modo de practica
     EntityFrameworkCore\Update-Database
 ```
 
-## Authors
+## Autor
 
-- Saúl Zarate - Desarrollador
+- SaÃºl Zarate - Desarrollador
 
   
