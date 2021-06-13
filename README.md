@@ -1,4 +1,4 @@
-# CRUD con Entity Framework Core 
+# Entity Framework Core con LINQ
 
 Proyecto realizado a modo de practica
 
