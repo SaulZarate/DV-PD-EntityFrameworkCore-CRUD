@@ -2,6 +2,18 @@
 
 Proyecto realizado a modo de practica
 
+## Instalación
+
+* Descomentar todo lo que este dentro del metodo:
+```
+   protected override void OnModelCreating(ModelBuilder modelBuilder){ ... }
+```
+* Ejecutar los siguiente comandos en la consola del administrador de paquetes:
+   * EntityFrameworkCore\Add-Migration nombreDeLaMigracion
+   * EntityFrameworkCore\Update-Database
+
+
+<!-- 
 ## Creación del proyecto desde cero
 
 * Installar los siguientes paquetes desde el administrador de paquetes NuGet: 
@@ -64,7 +76,7 @@ Proyecto realizado a modo de practica
 ```
     EntityFrameworkCore\Update-Database
 ```
-
+-->
 ## Autor
 
 - Saúl Zarate - Desarrollador
