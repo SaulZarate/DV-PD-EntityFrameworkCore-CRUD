@@ -1,8 +1,23 @@
-# CRUD con Entity Framework Core 
+# Entity Framework Core con LINQ
 
 Proyecto realizado a modo de practica
 
-## Creación del proyecto desde cero
+## InstalaciÃ³n
+
+* Crear una base de datos y agregar tus credenciales en Helpers/Config.cs
+
+* Descomentar todo lo que este dentro del metodo:
+```
+   protected override void OnModelCreating(ModelBuilder modelBuilder){ ... }
+```
+* Ejecutar los siguiente comandos en la consola del administrador de paquetes:
+
+   * EntityFrameworkCore\Add-Migration nombreDeLaMigracion
+   * EntityFrameworkCore\Update-Database
+
+
+<!-- 
+## CreaciÃ³n del proyecto desde cero
 
 * Installar los siguientes paquetes desde el administrador de paquetes NuGet: 
     * Microsoft.EntityFrameworkCore
@@ -16,7 +31,7 @@ Proyecto realizado a modo de practica
     ```
         using Microsoft.EntityFrameworkCore;
     ```
-    * Crear el constructor (dejarlo vacío)
+    * Crear el constructor (dejarlo vacÃ­o)
 * Crear una clase por Modelo
     * Agregar los atributos necesarios usando properties
     ```
@@ -64,9 +79,9 @@ Proyecto realizado a modo de practica
 ```
     EntityFrameworkCore\Update-Database
 ```
+-->
+## Autor
 
-## Authors
-
-- Saúl Zarate - Desarrollador
+- SaÃºl Zarate - Desarrollador
 
   
