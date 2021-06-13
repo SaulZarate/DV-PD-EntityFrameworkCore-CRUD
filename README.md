@@ -4,11 +4,14 @@ Proyecto realizado a modo de practica
 
 ## Instalación
 
+* Crear una base de datos y agregar tus credenciales en Helpers/Config.cs
+
 * Descomentar todo lo que este dentro del metodo:
 ```
    protected override void OnModelCreating(ModelBuilder modelBuilder){ ... }
 ```
 * Ejecutar los siguiente comandos en la consola del administrador de paquetes:
+
    * EntityFrameworkCore\Add-Migration nombreDeLaMigracion
    * EntityFrameworkCore\Update-Database
 
