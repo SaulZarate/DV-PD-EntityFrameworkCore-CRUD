@@ -1,8 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Linq;
+using System.Collections.Generic;
+
+// Permite pausar la aplicacion con Thread.Sleep(2500)
 using System.Threading;
+
 using Microsoft.EntityFrameworkCore;
 using pruebasEntityFramework.Models;
 using pruebasEntityFramework.Views;
@@ -50,10 +53,12 @@ namespace pruebasEntityFramework.Controllers
             // Verifico que todo funciones bien
             //this.vista.mostrarMensaje("Hola Mundo!");
 
-            //this.listarTodo();
+            this.listarTodo();
             //this.listarCategorias();
+
             // Ordenado por nombre de categoria
             //this.listarProductosOrdenadosPorCategoria();
+
             // Ordenado por categoria_id
             //this.listarProductosOrdenadosPorCategoria(true);
 
@@ -77,96 +82,107 @@ namespace pruebasEntityFramework.Controllers
             //this.listarCategorias();
 
             /* EDITAR CATEGORIA (Harcodeada) */
-            this.listarCategorias();
-            if (this.editarCategoria()) this.vista.mostrarMensaje("\n---- Categoria editada ----\n");
-            Thread.Sleep(2500);
-            this.listarCategorias();
+            //this.listarCategorias();
+            //if (this.editarCategoria()) this.vista.mostrarMensaje("\n---- Categoria editada ----\n");
+            //Thread.Sleep(2500);
+            //this.listarCategorias();
 
             // Para no cortar la App
             this.vista.pedirDato();
         }
         private void listarTodo()
         {
-            this.vista.mostrarMensaje("-------- CATEGORIAS --------");
-            foreach (var categoria in this.categorias)
-                this.vista.mostrarMensaje($"Id: {categoria.Id} - Nombre: {categoria.Nombre}");
-            this.vista.mostrarMensaje();
+            // Obtener datos de la DB sin TRACKING
+            List<Categoria> categorias = this.categorias.AsNoTracking().ToList();
+            List<Producto> productos = this.productos.AsNoTracking().ToList();
 
-            this.vista.mostrarMensaje("-------- PRODUCTOS --------");
-            foreach (var producto in this.productos)
-            {
-                this.vista.mostrarMensaje($"Id: {producto.Id}");
-                this.vista.mostrarMensaje($"Nombre: {producto.Nombre}");
-                this.vista.mostrarMensaje($"Precio: {producto.Precio}");
-                this.vista.mostrarMensaje($"Stock: {producto.Stock}");
-                this.vista.mostrarMensaje($"Fecha de creacion: {producto.FechaDeCreacion.ToString()}");
-                // this.vista.mostrarMensaje($"Categoria_id: {producto.Categoria_id}");
-                var categoriaDelProducto = this.categorias.Find(producto.Categoria_id);
-                this.vista.mostrarMensaje($"Categoria: {categoriaDelProducto.Nombre}");
-                // Salto de linea
-                this.vista.mostrarMensaje();
-            }
+            // Guardar los datos en List<List<String>> para las vistas
+            List<List<String>> categoriasList = new List<List<string>>();
+            List<List<String>> productosList = new List<List<string>>();
+            foreach (var categoria in categorias)
+                categoriasList.Add(categoria.CategoriaToList());
+            foreach (var producto in productos)
+                productosList.Add(producto.ProductoToList());
+
+            // Imprimir datos
+            this.vista.imprimirCategorias(categoriasList);
+            this.vista.imprimirProductos(productosList);
         }
         private void listarCategorias()
         {
-            this.vista.mostrarMensaje("--------- CATEGORIAS ---------");
-            //foreach (var categoria in this.categorias)
-            //{
-            //    this.vista.mostrarMensaje($"Id: {categoria.Id}");
-            //    this.vista.mostrarMensaje($"Nombre: {categoria.Nombre}" + "\n");
-            //}
+            // Obtener las categorias sin TRACKING.
+            // De esta forma trae los datos directamente de la DB. Si agregar objetos a la lista de categorias
+            // pero no la guardas en la DB, esa categoria no la vas a obtener hasta que la agregues a la DB
+            List<Categoria> categorias = this.categorias.AsNoTracking().ToList();
 
-            // Consulta SIN TRACKING. Trae los datos directamente de la DB
-            //foreach(var categoria in this.categorias.AsNoTracking().ToList())
-            //{
-            //    this.vista.mostrarMensaje($"Id: {categoria.Id}");
-            //    this.vista.mostrarMensaje($"Nombre: {categoria.Nombre}" + "\n");
-            //}
+            // Obtengo las categorias con TRACKING
+            // List<Categoria> categorias = this.categorias.ToList();
 
+            List<List<String>> categoriasInList = new List<List<string>>();
+            foreach (Categoria categoria in categorias)
+                categoriasInList.Add(categoria.CategoriaToList());
+
+            // Imprimo todas las categorias
+            this.vista.imprimirCategorias(categoriasInList);
+
+            // Posd: Las consultas sin TRACKING son mas rapidas
         }
         private void listarProductos()
         {
+            // Obtengo los productos con LINQ
             var productos = from p in this.productos
-                        join c in this.categorias
-                            on p.Categoria_id equals c.Id
-                        select new { p.Id, p.Nombre, p.Precio, p.Stock, p.FechaDeCreacion, Categoria = c.Nombre };
-            
-            this.vista.mostrarMensaje("--------- PRODUCTOS ---------");
+                            join c in this.categorias
+                                on p.Categoria_id equals c.Id
+                            select new { 
+                                p.Id, 
+                                p.Nombre, 
+                                p.Precio, 
+                                p.Stock,
+                                p.FechaDeCreacion, 
+                                Categoria = c.Nombre }; // Categoria = categorias.Nombre indica el alias
+
+            List<List<String>> productosParaLasVistas = new List<List<String>>();
             foreach (var producto in productos)
             {
-                this.vista.mostrarMensaje($"Id: {producto.Id}");
-                this.vista.mostrarMensaje($"Nombre: {producto.Nombre}");
-                this.vista.mostrarMensaje($"Precio: {producto.Precio}");
-                this.vista.mostrarMensaje($"Stock: {producto.Stock}");
-                this.vista.mostrarMensaje($"Fecha de creacion: {producto.FechaDeCreacion.ToString()}");
-                this.vista.mostrarMensaje($"Categoria: {producto.Categoria}" + "\n");
+                productosParaLasVistas.Add(new List<String>()
+                {
+                    producto.Id.ToString(),
+                    producto.Nombre,
+                    producto.Precio.ToString(),
+                    producto.Stock.ToString(),
+                    producto.FechaDeCreacion.ToString(),
+                    producto.Categoria
+                });
             }
-}
+
+            // Muestro los productos
+            this.vista.imprimirProductos(productosParaLasVistas);
+        }
         private void listarProductosOrdenadosPorCategoria(Boolean orderForCategoria_id = false)
         {
-            /* JOIN CON LINQ Y LAMBDA */
+            // JOIN CON LINQ Y LAMBDA 
             var productos = this.productos.
-                                        Join(this.categorias,
-                                            producto => producto.Categoria_id,
-                                            categoria => categoria.Id,
-                                            (producto, categoria) =>
-                                            new
-                                            {
-                                                Id = producto.Id,
-                                                Nombre = producto.Nombre,
-                                                Precio = producto.Precio,
-                                                Stock = producto.Stock,
-                                                FechaDeCreacion = producto.FechaDeCreacion,
-                                                Categoria = categoria.Nombre
-                                                // Categoria_id = categoria.Id
-                                            })
-                                        .OrderBy(p => p.Categoria)
-                                        // .OrderBy( p => p.Categoria_id); 
-                                        .Select( p => p);
+                            Join(this.categorias,
+                                producto => producto.Categoria_id,
+                                categoria => categoria.Id,
+                                (producto, categoria) =>
+                                new
+                                {
+                                    Id = producto.Id,
+                                    Nombre = producto.Nombre,
+                                    Precio = producto.Precio,
+                                    Stock = producto.Stock,
+                                    FechaDeCreacion = producto.FechaDeCreacion,
+                                    Categoria = categoria.Nombre
+                                    // Categoria_id = categoria.Id
+                                })
+                            .OrderBy(p => p.Categoria)
+                            // .OrderBy( p => p.Categoria_id); 
+                            .Select( p => p);
 
             if (orderForCategoria_id)
             {
-                /* JOIN CON LINQ */
+                // JOIN CON LINQ SIN LAMBDA
                 productos = from p in this.productos
                             join c in this.categorias
                                 on p.Categoria_id equals c.Id
@@ -175,16 +191,22 @@ namespace pruebasEntityFramework.Controllers
                             select new { p.Id, p.Nombre, p.Precio, p.Stock, p.FechaDeCreacion, Categoria = c.Nombre };
             }
 
-            this.vista.mostrarMensaje("-------- PRODUCTOS --------");
+            List<List<String>> productosParaLasVistas = new List<List<String>>();
             foreach (var producto in productos)
             {
-                this.vista.mostrarMensaje($"Id: {producto.Id}");
-                this.vista.mostrarMensaje($"Nombre: {producto.Nombre}");
-                this.vista.mostrarMensaje($"Precio: {producto.Precio}");
-                this.vista.mostrarMensaje($"Stock: {producto.Stock}");
-                this.vista.mostrarMensaje($"Fecha de creacion: {producto.FechaDeCreacion.ToString()}");
-                this.vista.mostrarMensaje($"Categoria: {producto.Categoria}" + "\n");
+                productosParaLasVistas.Add(new List<String>()
+                {
+                    producto.Id.ToString(),
+                    producto.Nombre,
+                    producto.Precio.ToString(),
+                    producto.Stock.ToString(),
+                    producto.FechaDeCreacion.ToString(),
+                    producto.Categoria
+                });
             }
+
+            // Muestro los productos
+            this.vista.imprimirProductos(productosParaLasVistas);
         }
 
         private bool agregarCategoria()
@@ -203,12 +225,11 @@ namespace pruebasEntityFramework.Controllers
 
             if (this.categorias.Find(categoria_id) == null)
             {
-                this.vista.mostrarMensaje("\n---- Su categoria id no existe ----\n");
+                this.vista.mostrarMensaje("\n---- La categoria id no existe ----\n");
                 return false;
             }
 
             this.productos.Add(new Producto {Nombre = nombre, Precio = precio, Stock = stock,FechaDeCreacion = fechaDeCreacion, Categoria_id = categoria_id });
-
             if (this.context.SaveChanges() == 1)
                 return true;
             else
@@ -238,6 +259,7 @@ namespace pruebasEntityFramework.Controllers
         }
         private bool editarCategoria()
         {
+            /* Edicion harcodead */
             int categoria_id = 7;
             String nuevoNombreDeCategoria = "CategoriaHarcodeada2";
 
@@ -249,7 +271,7 @@ namespace pruebasEntityFramework.Controllers
             }
             
             categoria.Nombre = nuevoNombreDeCategoria;
-            this.categorias.Update(categoria);
+            this.categorias.Update(categoria); // Actualizo el DbSet
 
             if (this.context.SaveChanges() == 1) return true;
             else

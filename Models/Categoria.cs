@@ -9,5 +9,9 @@ namespace pruebasEntityFramework.Models
         public int Id { get; set; }
         public String Nombre { get; set; }
 
+        public List<String> CategoriaToList()
+        {
+            return new List<string>() { this.Id.ToString(), this.Nombre };
+        }
     }
 }
